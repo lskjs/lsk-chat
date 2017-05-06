@@ -6,8 +6,8 @@ import {
   CardBlock,
   FormControl,
 } from 'react-bootstrap';
-import Avatar from '~/App/components/Avatar';
-import Loading from '~/App/components/Loading';
+import Avatar from 'lsk-general/General/Avatar';
+import Loading from 'lsk-general/General/Loading';
 
 @inject('user', 'api')
 export default class Chat extends Component {
