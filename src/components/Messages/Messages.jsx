@@ -4,10 +4,13 @@ import _ from 'lodash';
 import {
   Card,
   CardBlock,
+} from 'react-bootstrap-card';
+import {
   FormControl,
 } from 'react-bootstrap';
 import Avatar from 'lsk-general/General/Avatar';
 import Loading from 'lsk-general/General/Loading';
+import CommentBox from '../CommentBox';
 
 @inject('user', 'api')
 export default class Chat extends Component {
@@ -70,7 +73,18 @@ export default class Chat extends Component {
           <Loading />
         </If>
         <If condition={this.state.messages}>
-          {this.state.messages.map(message => (
+          <CommentBox
+            comments={this.state.messages.map(message => ({
+              ...message,
+              date: message.createdAt,
+              user: {
+                ...message.user,
+                avatar: _.get(message, 'user.profile.avatar'),
+              }
+            }))}
+            user={this.props.user}
+          />
+          {/* {this.state.messages.map(message => (
             <Card key={message._id}>
               <CardBlock>
                 <Avatar
@@ -83,7 +97,7 @@ export default class Chat extends Component {
                 {message.content}
               </CardBlock>
             </Card>
-          ))}
+          ))} */}
           <Card>
             <CardBlock>
               <FormControl

@@ -1,0 +1,52 @@
+.reply-form {
+  display:flex;
+  font-family:inherit;
+  padding:5px;
+  &__body {
+    width:100%;
+    margin-left:10px;
+    display:flex;
+    flex-wrap:wrap;
+  }
+  textarea {
+    resize: none;
+    padding: 14px 20px 16px 12px;
+    border:1px solid #e8e8e8;
+    font-family: inherit;
+    width: 100%;
+  }
+
+  &__footer {
+    background: #fafbfc;
+    width: 100%;
+    display:flex;
+    padding:5px;
+    align-items:baseline;
+    justify-content: space-between;
+  }
+  &__add-attachment {
+
+  }
+  &__actions {
+    width: 80%;
+  }
+  &__actions:last-child {
+    text-align:right;
+  }
+
+  &__icon-btn {
+      border: 0px;
+      background: transparent;
+      outline: none;
+      cursor:pointer;
+  }
+
+  &__btn {
+    padding:8px 15px;
+    outline:none;
+    background: white;
+    border:1px solid #e8e8e8;
+    cursor: pointer;
+    font-size:14px;
+  }
+}

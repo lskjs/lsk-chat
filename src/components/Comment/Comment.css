@@ -1,0 +1,57 @@
+.comment {
+  background: white;
+  line-height: 14px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  font-family: Source Sans Pro,Helvetica Neue,Helvetica,Arial,sans-serif;
+  font-weight: 400;
+  /*font-family: -apple-system, "San Francisco", Roboto, "Segoe UI", "Helvetica Neue", "Lucida Grande", sans-serif;*/
+  display: flex;
+  padding:5px;
+  border-bottom: 1px solid #f4f4f4;
+
+  a {
+      text-decoration: none;
+      color: inherit;
+  }
+
+  &__content {
+    width: 100%;
+    display:flex;
+    flex-wrap:wrap;
+    margin:5px 5px 5px 0px;
+  }
+
+  &__body {
+    width: 100%;
+    margin-left:10px;
+  }
+
+  &__actions {
+    text-align:right;
+    color:initial;
+    opacity:0.3;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    &:hover {
+      opacity:1;
+
+    }
+  }
+
+  &__meta {
+    width: 100%;
+    display:flex;
+    justify-content: space-between;
+    font-size:14px;
+
+  }
+
+  &__meta:first-child {
+    font-weight:bold;
+  }
+
+  &__meta:last-child {
+    color: #939393;
+  }
+
+}
