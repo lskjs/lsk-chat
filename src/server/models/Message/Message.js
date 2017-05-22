@@ -44,13 +44,14 @@ export function getSchema(ctx) {
       });
     }
     if (this.subjectType === 'Chat') {
-      console.log(123123);
+      console.log("notify this.subjectType === 'Chat'");
     }
   });
 
   return schema;
 }
 
+
 export default(ctx) => {
-  return ctx.db.model('Message', getSchema(ctx).getMongooseSchema(), 'messages');
+  return getSchema(ctx).getMongooseModel(ctx.db);
 };

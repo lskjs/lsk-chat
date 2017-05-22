@@ -32,5 +32,5 @@ export function getSchema(ctx) {
 }
 
 export default(ctx) => {
-  return ctx.db.model('Chat', getSchema(ctx).getMongooseSchema(), 'chats');
+  return getSchema(ctx).getMongooseModel(ctx.db);
 };

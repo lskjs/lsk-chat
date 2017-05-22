@@ -6,7 +6,7 @@ import ReplyForm from '../ReplyForm';
 export default class CommentBox extends Component {
 
   @autobind
-  renderComment(comment, index, level = 0) {
+  renderComment(comment = {}, index, level = 0) {
     const { user } = this.props;
     const maxLevel = +this.props.nested || 0;
     // const maxNestingLevel = 4;

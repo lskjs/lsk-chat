@@ -1,9 +1,6 @@
-export default (ctx) => {
-  return {
-    init() {
-      this.components = require('./components').default(ctx);
-      // this.models = require('./models').default(ctx);
-      // this.stores = require('./mobx').default(ctx);
-    }
-  };
+export default ctx => class LskChat {
+  async init() {
+    this.components = require('./uapp/components').default(ctx, this);
+    // this.stores = require('./uapp/stores').default(ctx);
+  }
 };

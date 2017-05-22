@@ -1,12 +1,10 @@
 import { autobind } from 'core-decorators';
-import getModels from './models';
-
 
 export default (ctx) => {
-  return class ChatModule {
+  return class LskChat {
 
     async init() {
-      this.models = getModels(ctx);
+      this.models = require('./server/models').default(ctx, this);
     }
     async run() {
       ctx.app.use('/api/module/chat', this.getApi());
