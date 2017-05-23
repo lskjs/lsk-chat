@@ -1,9 +1,9 @@
 import React from 'react'; //eslint-disable-line
 import Comment from './Comment';
-import ClearIcon from 'react-icons/lib/md/clear';
-import FavoriteIcon from 'react-icons/lib/md/favorite-outline';
-import EditIcon from 'react-icons/lib/md/edit';
-import AddIcon from 'react-icons/lib/md/add-circle-outline';
+import ClearIcon from 'react-icons2/md/clear';
+import FavoriteIcon from 'react-icons2/md/favorite-outline';
+import EditIcon from 'react-icons2/md/edit';
+import AddIcon from 'react-icons2/md/add-circle-outline';
 
 const formatDate = (value, unit, suffix, date, defaultFormatter) => {
     return "commented " + defaultFormatter(value, unit, suffix, date);

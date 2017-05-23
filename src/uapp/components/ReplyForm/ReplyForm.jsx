@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Textarea from 'react-textarea-autosize';
-import AddIcon from 'react-icons/lib/md/add-circle-outline';
+import AddIcon from 'react-icons2/md/add-circle-outline';
 import Avatar from 'lsk-general/General/Avatar';
 import cn from 'classnames';
 import importcss from 'importcss';

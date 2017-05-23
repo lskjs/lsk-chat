@@ -1,10 +1,10 @@
 import React from 'react'; //eslint-disable-line
 import Comment from '../Comment';
 import CommentList from './CommentList';
-import ClearIcon from 'react-icons/lib/md/clear';
-import FavoriteIcon from 'react-icons/lib/md/favorite-outline';
-import EditIcon from 'react-icons/lib/md/edit';
-import AddIcon from 'react-icons/lib/md/add-circle-outline';
+import ClearIcon from 'react-icons2/md/clear';
+import FavoriteIcon from 'react-icons2/md/favorite-outline';
+import EditIcon from 'react-icons2/md/edit';
+import AddIcon from 'react-icons2/md/add-circle-outline';
 
 const user1 = {
   _id: '12345',
