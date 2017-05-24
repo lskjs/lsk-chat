@@ -17,7 +17,7 @@ export default (ctx) => {
       const { isAuth } = ctx.middlewares;
       const { createResourse, wrapResourse } = ctx.helpers;
       const { Chat, Message } = this.models;
-      api.get('/message/:subjectType/:subjectId', isAuth, async (req) => {
+      api.get('/message/:subjectType/:subjectId', async (req) => {
         const params = req.allParams();
         return Message.find({
           subjectType: params.subjectType,
@@ -25,7 +25,7 @@ export default (ctx) => {
         })
         .populate('user'); // order populate sort
       });
-      api.post('/message', async (req) => {
+      api.post('/message', isAuth, async (req) => {
         const params = req.allParams();
         const userId = req.user._id;
         params.user = userId;
