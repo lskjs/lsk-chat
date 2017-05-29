@@ -29,6 +29,7 @@ export function getSchema(ctx) {
       default: false,
     },
   }, {
+    collection: 'chat_message',
     timestamps: true,
   });
 

@@ -25,6 +25,7 @@ export function getSchema(ctx) {
       type: String,
     },
   }, {
+    collection: 'chat_chat',
     timestamps: true,
   });
 
