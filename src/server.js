@@ -17,16 +17,55 @@ export default (ctx) => {
       const api = ctx.asyncRouter();
       const { isAuth } = ctx.middlewares;
       const { createResourse, wrapResourse, wrapResoursePoint } = ctx.helpers;
+      const { User } = ctx.models;
       const { Chat, Message } = this.models;
-      api.all('/myList', async (req) => {
-        let chats = await Chat.find({
-          // subjectType: params.subjectType,
-          // subjectId: params.subjectId,
+      api.all('/fix', async (req) => {
+        const myUserId = req.user._id;
+        const users = await User.find({
+
         });
+        const i = 0;
+        return Promise.mapSeries(users, (user1) => {
+          return Promise.mapSeries(users, async (user2) => {
+            if ((i == 0 && user1._id != user2._id)) {
+              // i++;
 
+              const userIds = [user1._id, user2._id];
+              console.log({ userIds });
+              let chat = await Chat.findOne({
+                type: 'private',
+                userIds: { $all: userIds },
+              });
+
+              if (chat) return true;
+              if (Math.random() > 0.9) return false;
+
+
+              if (!chat) {
+                // throw e(404, '!chat');
+                chat = await Chat.create({
+                  type: 'private',
+                  ownerId: userIds[0],
+                  userIds,
+                });
+              }
+              return 'chat';
+            }
+            return null;
+          });
+        });
+        // .populate('user'); // order populate sort
+      });
+      api.all('/myList', async (req) => {
+        const myUserId = req.user._id;
+        let chats = await Chat.find({
+          type: 'private',
+          userIds: { $all: [myUserId] },
+        });
         chats = await Chat.prepare(chats);
+        chats = chats.filter(c => c.message != null);
         chats = _.sortBy(chats, 'message.createdAt').reverse();
-
+        // console.log({ qwedasda: chats[0] });
         return chats;
         // .populate('user'); // order populate sort
       });
@@ -38,21 +77,52 @@ export default (ctx) => {
         })
         .populate('user'); // order populate sort
       });
+      api.get('/private/:userId', isAuth, async (req) => {
+        const myUserId = req.user._id;
+        const { userId } = req.params;
+        const { content } = req.data;
+        if (!myUserId) throw '!myUserId';
+        const userIds = [
+          myUserId, userId,
+        ];
+
+        let chat = await Chat.findOne({
+          type: 'private',
+          userIds: { $all: userIds },
+        });
+
+
+        if (!chat) {
+          // console.log('CREATE CHAT');
+          // throw '!chat';
+          // throw e(404, '!chat');
+          chat = await Chat.create({
+            type: 'private',
+            ownerId: myUserId,
+            userIds,
+          });
+        }
+        return Chat.prepare(chat);
+      });
       api.post('/private/:userId', isAuth, async (req) => {
         const myUserId = req.user._id;
         const { userId } = req.params;
         const { content } = req.data;
         if (!myUserId) throw '!myUserId';
-        // const { Chat } = this.models;
-        let chat; //= Chat.findOne({});
+        const userIds = [
+          myUserId, userId,
+        ];
+
+        let chat = await Chat.findOne({
+          type: 'private',
+          userIds: { $all: userIds },
+        });
 
         if (!chat) {
           chat = await Chat.create({
             ownerId: userId,
-            userIds: [
-              myUserId, userId,
-            ],
             type: 'private',
+            userIds,
           });
         }
 
@@ -64,8 +134,13 @@ export default (ctx) => {
           content,
         };
 
-        const message = Message.create(data);
+        let message = await Message.create(data);
+        message = await Message.prepare(message);
 
+        this.emit(
+          this.getRoomName(data.subjectType, data.subjectId),
+          message,
+        );
         // console.log(this.ws, 'this.ws');
         // this.emit(
         //   this.getRoomName(params.subjectType, params.subjectId),
@@ -112,23 +187,9 @@ export default (ctx) => {
       }); // Изменить комментарий
       api.use('/', wrapResoursePoint(createResourse(Chat)));
       const messageRes = createResourse(Message);
-      messageRes.list = async () => {
-        const messages = await Message.find({
-          // subjectType: params.subjectType,
-          // subjectId: params.subjectId,
-        })
-        .sort({createdAt: -1});
-
+      messageRes.list = async (req) => {
+        const messages = await Message.findByParams(req.data).sort({ createdAt: -1 });
         return Message.prepare(messages);
-        return chats2.map((chat) => {
-          return {
-            ...chat.toObject(),
-            message: message.toObject(),
-            // users: [123123, 12312312]
-          };
-        });
-        return chats;
-        //
       };
       api.use('/message', wrapResoursePoint(messageRes));
       // api.use('/chat', wrapResoursePoint(createResourse(Messag)));
@@ -141,7 +202,7 @@ export default (ctx) => {
     }
 
     emit(room, message, emitAction = 'message') {
-      // console.log(`Шлю в комнату ${room} сообщение ${message.content}`);
+      console.log(`Шлю в комнату ${room} сообщение ${message.content}`);
       return this.ws.to(room).emit(emitAction, message);
     }
 
@@ -157,6 +218,7 @@ export default (ctx) => {
       socket.join(`user_${req.user.id}`);
       socket.join(roomName);
       socket.on('message', async (data) => {
+        console.log('socket.on message', data);
         const message = new Message({
           ...data,
           subjectType,

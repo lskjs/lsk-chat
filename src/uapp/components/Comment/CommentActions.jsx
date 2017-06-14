@@ -13,12 +13,12 @@ class CommentActions extends React.Component {
   }
 
   render() {
-    const { className, children, ...props } = this.props;
-
+    const { className, children, leftAligned, ...props } = this.props;
+    __DEV__ && console.log("LA: ", leftAligned);
     return (
       <div
           {...props}
-          styleName={cn(className, 'comment__actions')}
+          styleName={cn({ className, 'comment__actions' : true, 'comment__actions-left' : leftAligned })}
         >
         {children}
       </div>

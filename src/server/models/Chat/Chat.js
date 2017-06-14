@@ -46,22 +46,23 @@ export function getSchema(ctx, module) {
   schema.statics.prepareOne = async function (obj) {
     const { Message } = module.models;
 
-    const message = await Message.findOne({
+    let message = await Message.findOne({
       subjectType: 'Chat',
       subjectId: obj._id,
     })
+    .sort({ createdAt: -1 });
+
     await this.populate(obj, ['users', 'owner']);
     return {
       ...obj.toObject(),
-      message: message ? message : await Message.findOne({})
-    }
+      message,
+    };
   };
   schema.statics.prepare = function (obj) {
     if (Array.isArray(obj)) {
       return Promise.map(obj, o => this.prepareOne(o));
-    } else {
-      return this.prepareOne(obj)
     }
+    return this.prepareOne(obj);
   };
 
   //

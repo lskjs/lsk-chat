@@ -1,13 +1,19 @@
 {
   "name": "lsk-chat",
-  "version": "0.4.2",
+  "version": "0.4.5",
   "author": "isuvorov",
   "license": "MIT",
   "scripts": {
     "release": "npm publish"
   },
   "dependencies": {
-    "react-textarea-autosize": "^4.3.0",
-    "react-timeago": "^3.3.0"
+    "petrovich": "0.2.1",
+    "react-textarea-autosize": "4.3.0",
+    "react-time-format": "0.0.5",
+    "react-timeago": "3.3.0"
+  },
+  "devDependencies": {
+    "@kadira/storybook": "^2.35.3",
+    "storybox": "^0.5.0"
   }
 }

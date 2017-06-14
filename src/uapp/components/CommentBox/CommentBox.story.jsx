@@ -27,7 +27,7 @@ const user3 = {
 const now = new Date();
 
 const comments = [
-  { _id: 1, user: user1, content: 'Привет, Никита!', date: new Date(now.setSeconds(now.getSeconds() + 0)) },
+  { _id: 1, user: user1, content: 'Привет, Никита!', date: new Date(now.setSeconds(now.getSeconds() - 1000000)) },
   { _id: 2, user: user2, content: 'Привет, Санек!', date: new Date(now.setSeconds(now.getSeconds() + 10)) },
   { _id: 3, user: user1, content: 'Как дела?', date: new Date(now.setSeconds(now.getSeconds() + 20)) },
   { _id: 4, user: user2, content: 'Ничего, книги пишу', date: new Date(now.setSeconds(now.getSeconds() + 30)) },
@@ -50,9 +50,13 @@ const nestedComments = [
         content: '!!!',
         date: new Date(now.setSeconds(now.getSeconds() + 100000)),
         children: [
-          { _id: 17, user: user3, content: 'Я тут дочерний коммент написал', date: new Date(now.setSeconds(now.getSeconds() + 55)) },
-          { _id: 18, user: user3, content: 'Я молодец', date: new Date(now.setSeconds(now.getSeconds() + 56)) },
-          { _id: 19, user: user3, content: '!!!', date: new Date(now.setSeconds(now.getSeconds() + 100000)) },
+          { _id: 17, user: user3, content: 'Я тут ещё более дочерний коммент написал', date: new Date(now.setSeconds(now.getSeconds() + 55)) },
+          { _id: 18, user: user3, content: 'Я молодец дважды', date: new Date(now.setSeconds(now.getSeconds() + 56)) },
+          { _id: 19, user: user3, content: '!!!', date: new Date(now.setSeconds(now.getSeconds() + 100000)),
+            children : [
+              { _id: 20, user: user3, content: 'Вот это комментарий большой глубины', date: new Date(now.setSeconds(now.getSeconds() + 100500)) }
+            ]
+          },
         ],
       },
     ],
@@ -64,14 +68,15 @@ const nestedComments = [
 const nestedComments2 = [
   { _id: 1, user: user1, content: 'Привет, Никита!', date: new Date(now.setSeconds(now.getSeconds() + 0)) },
   { _id: 2, user: user2, content: 'Привет, Санек!', date: new Date(now.setSeconds(now.getSeconds() + 10)) },
-  { _id: 2, user: user1, content: 'Как дела?', date: new Date(now.setSeconds(now.getSeconds() + 10)) },
+  { _id: 3, user: user1, content: 'Как дела?', date: new Date(now.setSeconds(now.getSeconds() + 10)) },
   { _id: 4, user: user2, content: 'Ничего, книги пишу', date: new Date(now.setSeconds(now.getSeconds() + 30)) },
   { _id: 5, user: user1, content: 'Скучный ты', date: new Date(now.setSeconds(now.getSeconds() + 40)) },
   { _id: 7, user: user3, replyId: 3, content: 'Я тут дочерний коммент написал', date: new Date(now.setSeconds(now.getSeconds() + 55)) },
   { _id: 8, user: user3, replyId: 7, content: 'Я молодец', date: new Date(now.setSeconds(now.getSeconds() + 56)) },
   { _id: 9, user: user3, replyId: 8, content: '!!!', date: new Date(now.setSeconds(now.getSeconds() + 100)) },
-  { _id: 10, user: user1, replyId: 3, content: 'Привет, Никита!', date: new Date(now.setSeconds(now.getSeconds() + 12335)) },
-  { _id: 11, user: user1, replyId: 10, content: 'Привет, Никита!', date: new Date(now.setSeconds(now.getSeconds() + 123)) },
+  { _id: 10, user: user1, replyId: 3, content: 'Привет, привет!', date: new Date(now.setSeconds(now.getSeconds() + 12335)) },
+  { _id: 11, user: user1, replyId: 10, content: 'Привет и пока!', date: new Date(now.setSeconds(now.getSeconds() + 123)) },
+  { _id: 12, user: user3, replyId: 11, content: 'Вот это комментарий большой глубины', date: new Date(now.setSeconds(now.getSeconds() + 100500)) }
 ];
 
 
@@ -101,7 +106,7 @@ module.exports = function ({ storiesOf, action }) {
     .add('smart nested comments ', () => (
       <CommentBox
         user={user1}
-        nested
+        nested={0}
         canWrite
         comments={nestedComments2}
       />

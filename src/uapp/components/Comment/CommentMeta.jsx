@@ -3,7 +3,14 @@ import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import cn from 'classnames';
 import importcss from 'importcss';
+import CommentActions from './CommentActions';
 import styles from './Comment.css';
+
+const MAX_HOURS_AGO = 6;
+
+var monthNames = ["January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
 
 @importcss(styles)
 class CommentMeta extends React.Component {
@@ -19,10 +26,18 @@ class CommentMeta extends React.Component {
   }
 
   formatDate = (value, unit, suffix, date, defaultFormatter) => {
+    let jsDate = new Date(date);
     if (unit == "second")
       return "Just now";
-    else
+    else if (unit == "year") {
+        return jsDate.getDate() + " " + jsDate.getMonth() + " " + jsDate.getYear();
+    }
+    else if (unit == "minute" || unit == "hour" && value <= MAX_HOURS_AGO) {
       return defaultFormatter(value, unit, suffix, date);
+    }
+    else {
+      return jsDate.getDate() + " " + monthNames[jsDate.getMonth()];
+    }
   }
 
   render() {
@@ -40,8 +55,10 @@ class CommentMeta extends React.Component {
         {...props}
         styleName={cn(className, 'comment__meta')}
       >
-        {userName && <span>{userName}</span>}
-        {timeAgo && timeAgoLink}
+        <CommentActions leftAligned>
+          {userName && <span>{userName}</span>}
+          {timeAgo && timeAgoLink}
+        </CommentActions>
         {children}
       </div>
     );

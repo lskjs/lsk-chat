@@ -12,6 +12,9 @@
   a {
       text-decoration: none;
       color: inherit;
+      &:hover {
+        text-decoration: underline;
+      }
   }
 
   &__content {
@@ -32,18 +35,36 @@
     opacity:0.3;
     transition: opacity 0.2s ease;
     cursor: pointer;
+    flex: 1 1 auto;
+    > * {
+      &:not(:last-child) {
+        margin-right:5px;
+      }
+    }
     &:hover {
       opacity:1;
 
     }
+    &:not(:first-child) {
+      margin-left:5px;
+    }
+
+    &-left {
+      opacity:1;
+      flex: 0 1 auto;
+    }
+
   }
 
   &__meta {
     width: 100%;
     display:flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     font-size:14px;
-
+    a {
+      font-weight:400;
+      color: #939393;
+    }
   }
 
   &__meta:first-child {
