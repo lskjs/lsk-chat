@@ -93,6 +93,7 @@ module.exports = function ({ storiesOf, action }) {
       <CommentBox
         user={user1}
         comments={nestedComments}
+        getChildren={(parent) => parent ? parent.children : nestedComments}
       />
     ))
     .add('nested=2', () => (
@@ -101,6 +102,7 @@ module.exports = function ({ storiesOf, action }) {
         canWrite
         nested={2}
         comments={nestedComments}
+        getChildren={(parent) => parent ? parent.children : nestedComments}
       />
     ))
     .add('smart nested comments ', () => (

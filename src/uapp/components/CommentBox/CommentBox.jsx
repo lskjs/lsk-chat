@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { autobind } from 'core-decorators';
 import Comment from '../Comment';
 import ReplyForm from '../ReplyForm';
@@ -14,14 +15,29 @@ function dative(user) { // TODO: перенести логику в user
 
 export default class CommentBox extends Component {
 
-  getChildrenComments(commentId = null) {
+  static propTypes = {
+    user: PropTypes.object,
+    nested :  PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    nestedMargin : PropTypes.number,
+    getChildren : PropTypes.func, // null parameter means get root level comments
+    canWrite : PropTypes.bool,
+    className : PropTypes.string,
+    style : PropTypes.object
+  }
+
+  static defaultProps = {
+    nestedMargin : 20,
+    canWrite : false
+  }
+
+  getChildrenComments(comment = null) {
     const { comments } = this.props;
-    return comments.filter(c => c.replyId == commentId) || [];
+    return comments.filter(c => !comment || c.replyId == comment._id) || [];
   }
 
   @autobind
-  renderComment(comment, index, level = 0, parent) { // TODO: подумать, о том чтобы передавать объект
-    const { user, nested } = this.props;
+  renderComment(comment, level = 0, parent = null) {
+    const { user, nested, nestedMargin, getChildren } = this.props;
 
     let maxLevel;
     if (nested === true) {
@@ -29,17 +45,19 @@ export default class CommentBox extends Component {
     } else {
       maxLevel = +this.props.nested || 0;
     }
-    const marginLeft = 20 * Math.min(level, maxLevel);
-    // const marginLeft = level > maxLevel ? 0 : 20 * Math.min(level, maxLevel); // Алексей
+
+    const marginLeft = level > maxLevel ? 0 : nestedMargin * level;
 
     const htmlId = `comment_${comment._id}`;
+
+    const getChildren = getChildren ? getChildren : this.getChildrenComments;
 
     return (
       <div key={comment._id} style={{ marginLeft }} id={htmlId}>
         <Comment user={comment.user}>
           <Comment.Header userName={comment.user.name}>
 
-            <If condition={comment.replyId}>
+            <If condition={comment.replyId && parent}>
               <Comment.Actions leftAligned>
                 <a className="reply-to" href={`#comment_${comment.replyId}`}>
                     ответил {dative(parent.user)}
@@ -53,6 +71,7 @@ export default class CommentBox extends Component {
                 <ClearIcon />
               </Comment.Actions>
             </If>
+
           </Comment.Header>
           <Comment.Content>{comment.content}</Comment.Content>
           <Comment.Footer date={comment.date || comment.createdAt} dateHref={`/comments/${comment._id}`}>
@@ -66,19 +85,11 @@ export default class CommentBox extends Component {
             </Comment.Actions>
           </Comment.Footer>
         </Comment>
-        <If condition={comment.children}>
-          {comment.children}
-        </If>
-        <If condition={!comment.children}>
           {
-            this.getChildrenComments(comment._id).map(
-              (cc, ii) => (
-                this.renderComment(cc, ii, level + 1, comment)
-              ),
+            getChildren(comment).map(
+              (child) => this.renderComment(child, level + 1, comment)
             )
           }
-        </If>
-
       </div>
     );
   }
@@ -92,10 +103,13 @@ export default class CommentBox extends Component {
   }
 
   render() {
-    // Сортируем
+    const { getChildren, className, style } = this.props;
+    const getChildren = getChildren ? getChildren : this.getChildrenComments;
+    const boxStyle = Object.assign({ background: '#fff', padding: '10 20' }, style);
+    
     return (
-      <div style={{ background: '#fff', padding: '10 20' }}>
-        {this.getChildrenComments(null).map((cc, ii) => this.renderComment(cc, ii, 0))}}
+      <div className={className} style={boxStyle}>
+        {getChildren().map((cc) => this.renderComment(cc, 0))}}
         {this.renderReplyForm()}
       </div>
     );
