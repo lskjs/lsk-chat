@@ -1,5 +1,5 @@
 import UniversalSchema from 'lego-starter-kit/utils/UniversalSchema';
-export function getSchema(ctx) {
+export function getSchema(ctx, module) {
   const mongoose = ctx.db;
   const schema = new UniversalSchema({
     subjectId: {
@@ -68,9 +68,8 @@ export function getSchema(ctx) {
   schema.statics.prepare = function (obj) {
     if (Array.isArray(obj)) {
       return Promise.map(obj, o => this.prepareOne(o));
-    } else {
-      return this.prepareOne(obj)
     }
+    return this.prepareOne(obj);
   };
 
 
@@ -81,19 +80,38 @@ export function getSchema(ctx) {
     justOne: true,
   });
 
-  schema.post('save', function () {
-    if (this.subjectType === 'User') {
-      ctx.modules.notification.notify({
-        subjectId: this._id,
-        subjectType: 'Message',
-        objectId: this.user,
-        objectType: 'User',
-        action: 'message',
-        userId: this.subjectId,
-      });
-    }
-    if (this.subjectType === 'Chat') {
-      console.log("notify this.subjectType === 'Chat'");
+  schema.post('save', async function () {
+    if (ctx.modules.notification) {
+      if (this.subjectType === 'User') {
+        ctx.modules.notification.notify({
+          subjectId: this._id,
+          subjectType: 'Message',
+          objectId: this.userId,
+          objectType: 'User',
+          action: 'message',
+          userId: this.subjectId,
+        });
+      }
+      if (this.subjectType === 'Chat') {
+        const { Chat } = module.models;
+        const chat = await Chat.findById(this.subjectId);
+        chat.userIds && chat.userIds.forEach((userId) => {
+          if ((this.userId && this.userId.toString()) === (userId.toString())) return;
+          ctx.modules.notification.notify({
+            message: 'Новое сообщение: ' + this.content,
+            subjectId: this.userId,
+            subjectType: 'User',
+            objectId: this.subjectId,
+            objectType: 'Chat',
+            action: 'message',
+            info: {
+              messageId: this._id,
+              messageText: this.content,
+            },
+            userId,
+          });
+        });
+      }
     }
   });
 
@@ -101,6 +119,6 @@ export function getSchema(ctx) {
 }
 
 
-export default(ctx) => {
-  return getSchema(ctx).getMongooseModel(ctx.db);
+export default(ctx, module) => {
+  return getSchema(ctx, module).getMongooseModel(ctx.db);
 };

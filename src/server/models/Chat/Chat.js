@@ -16,6 +16,10 @@ export function getSchema(ctx, module) {
       ],
       index: true,
     },
+    usersViewedAt: {
+      type: Object,
+      default: {},
+    },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -46,7 +50,7 @@ export function getSchema(ctx, module) {
   schema.statics.prepareOne = async function (obj) {
     const { Message } = module.models;
 
-    let message = await Message.findOne({
+    const message = await Message.findOne({
       subjectType: 'Chat',
       subjectId: obj._id,
     })
