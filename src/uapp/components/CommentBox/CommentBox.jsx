@@ -17,17 +17,17 @@ export default class CommentBox extends Component {
 
   static propTypes = {
     user: PropTypes.object,
-    nested :  PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-    nestedMargin : PropTypes.number,
-    getChildren : PropTypes.func, // null parameter means get root level comments
-    canWrite : PropTypes.bool,
-    className : PropTypes.string,
-    style : PropTypes.object
+    nested: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    nestedMargin: PropTypes.number,
+    getChildren: PropTypes.func, // null parameter means get root level comments
+    canWrite: PropTypes.bool,
+    className: PropTypes.string,
+    style: PropTypes.object,
   }
 
   static defaultProps = {
-    nestedMargin : 20,
-    canWrite : false
+    nestedMargin: 20,
+    canWrite: false,
   }
 
   getChildrenComments(comment = null) {
@@ -85,9 +85,9 @@ export default class CommentBox extends Component {
             </Comment.Actions>
           </Comment.Footer>
         </Comment>
-          {
+        {
             getChildren(comment).map(
-              (child) => this.renderComment(child, level + 1, comment)
+              child => this.renderComment(child, level + 1, comment),
             )
           }
       </div>
@@ -103,13 +103,13 @@ export default class CommentBox extends Component {
   }
 
   render() {
-    const { getChildren, className, style } = this.props;
-    const getChildren = getChildren ? getChildren : this.getChildrenComments;
+    const { className, style } = this.props;
+    const getChildren = this.props.getChildren ? this.props.getChildren : this.getChildrenComments;
     const boxStyle = Object.assign({ background: '#fff', padding: '10 20' }, style);
 
     return (
       <div className={className} style={boxStyle}>
-        {getChildren().map((cc) => this.renderComment(cc, 0))}}
+        {getChildren().map(cc => this.renderComment(cc, 0))}}
         {this.renderReplyForm()}
       </div>
     );
