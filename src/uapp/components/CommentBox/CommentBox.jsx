@@ -37,7 +37,7 @@ export default class CommentBox extends Component {
 
   @autobind
   renderComment(comment, level = 0, parent = null) {
-    const { user, nested, nestedMargin, getChildren } = this.props;
+    const { user, nested, nestedMargin } = this.props;
 
     let maxLevel;
     if (nested === true) {
@@ -50,7 +50,7 @@ export default class CommentBox extends Component {
 
     const htmlId = `comment_${comment._id}`;
 
-    const getChildren = getChildren ? getChildren : this.getChildrenComments;
+    const getChildren = this.props.getChildren ? this.props.getChildren : this.getChildrenComments;
 
     return (
       <div key={comment._id} style={{ marginLeft }} id={htmlId}>
@@ -106,7 +106,7 @@ export default class CommentBox extends Component {
     const { getChildren, className, style } = this.props;
     const getChildren = getChildren ? getChildren : this.getChildrenComments;
     const boxStyle = Object.assign({ background: '#fff', padding: '10 20' }, style);
-    
+
     return (
       <div className={className} style={boxStyle}>
         {getChildren().map((cc) => this.renderComment(cc, 0))}}
