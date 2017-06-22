@@ -56,18 +56,18 @@ export default (ctx) => {
       //   });
       //   // .populate('user'); // order populate sort
       // });
-      api.all('/chat/(:chatId/)?view', isAuth, async (req) => {
+      api.all('/setView', isAuth, async (req) => {
         const myUserId = req.user._id;
-        const chatId = req.params.chatId || req.data.chatId;
-        const chat = await Chat.findOne(chatId);
-        if (!chat) throw 'can\'t find chat'
-        if (chat.users.filter(userId => userId.toString() === myUserId)) {
-          if (chat.usersViewedAt) {
+        const chatId = req.data.chatId;
+        const chat = await Chat.findById(chatId);
+        if (!chat) throw 'can\'t find chat';
+        if (chat.userIds.filter(userId => userId.toString() === myUserId)) {
+          if (!chat.usersViewedAt) {
             chat.usersViewedAt = {};
           }
           chat.usersViewedAt[myUserId] = new Date();
         }
-        return chat;
+        return chat.save();
         // .populate('user'); // order populate sort
       });
       api.all('/myList', isAuth, async (req) => {
@@ -76,6 +76,7 @@ export default (ctx) => {
           type: 'private',
           userIds: { $all: [myUserId] },
         });
+        console.log({chats});
         chats = await Chat.prepare(chats);
         chats = chats.filter(c => c.message != null);
         chats = _.sortBy(chats, 'message.createdAt').reverse();
@@ -199,7 +200,14 @@ export default (ctx) => {
       api.use('/', wrapResoursePoint(createResourse(Chat)));
       const messageRes = createResourse(Message);
       messageRes.list = async (req) => {
-        const messages = await Message.findByParams(req.data).sort({ createdAt: -1 });
+        const params = {
+          sort: {
+            createdAt: -1,
+          },
+          ...req.data,
+        };
+
+        const messages = await Message.findByParams(params);
         return Message.prepare(messages);
       };
       api.use('/message', wrapResoursePoint(messageRes));

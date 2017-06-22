@@ -17,7 +17,7 @@ export function getSchema(ctx, module) {
       index: true,
     },
     usersViewedAt: {
-      type: Object,
+      type: {},
       default: {},
     },
     ownerId: {
