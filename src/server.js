@@ -56,7 +56,9 @@ export default (ctx) => {
       //   });
       //   // .populate('user'); // order populate sort
       // });
+      //
       api.all('/setView', isAuth, async (req) => {
+        // console.log('setView@@@');
         const myUserId = req.user._id;
         const chatId = req.data.chatId;
         const chat = await Chat.findById(chatId);
@@ -65,9 +67,16 @@ export default (ctx) => {
           if (!chat.usersViewedAt) {
             chat.usersViewedAt = {};
           }
+
+          // console.log('before', chat.usersViewedAt[myUserId]);
           chat.usersViewedAt[myUserId] = new Date();
+          // console.log('after', chat.usersViewedAt[myUserId]);
+          chat.markModified('usersViewedAt');
         }
-        return chat.save();
+        // console.log('after-after1231231', chat.usersViewedAt[myUserId]);
+        await chat.save();
+        // console.log('after-after', chat.usersViewedAt[myUserId]);
+        return chat
         // .populate('user'); // order populate sort
       });
       api.all('/myList', isAuth, async (req) => {
@@ -76,7 +85,7 @@ export default (ctx) => {
           type: 'private',
           userIds: { $all: [myUserId] },
         });
-        console.log({chats});
+        // console.log({chats});
         chats = await Chat.prepare(chats);
         chats = chats.filter(c => c.message != null);
         chats = _.sortBy(chats, 'message.createdAt').reverse();
@@ -165,7 +174,7 @@ export default (ctx) => {
         };
       });
       api.post('/message', isAuth, async (req) => {
-        // console.log(".post('/message'", req.data);
+        console.log(".post('/message'", req.data, req.user);
         const params = req.allParams();
         const userId = req.user._id;
         params.user = userId;

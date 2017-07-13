@@ -83,6 +83,7 @@ export default class Chat extends Component {
               }
             }))}
             user={this.props.user}
+            refForm={(form) => this.form = form}
           />
           {/* {this.state.messages.map(message => (
             <Card key={message._id}>
