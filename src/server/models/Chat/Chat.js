@@ -1,4 +1,6 @@
 import UniversalSchema from 'lego-starter-kit/utils/UniversalSchema';
+import find from 'lodash/find';
+
 export function getSchema(ctx, module) {
   const mongoose = ctx.db;
   const schema = new UniversalSchema({
@@ -48,7 +50,23 @@ export function getSchema(ctx, module) {
   });
 
   schema.statics.prepareOne = async function (obj) {
+    const { User } = ctx.models;
     const { Message } = module.models;
+
+    // TODO: разобраться почему не работает populate
+    // await obj
+    //   .populate('owner')
+    //   .populate('users');
+    //
+
+    // const userIds = [obj.ownerId, ...obj.userIds];
+    const userIds = obj.userIds;
+    const allUsers = await User.find({
+      _id: { $in: userIds },
+    });
+
+    // const owner = find(allUsers, { _id: obj.ownerId });
+    const users = obj.userIds.map(userId => find(allUsers, { _id: userId }));
 
     const message = await Message.findOne({
       subjectType: 'Chat',
@@ -56,25 +74,15 @@ export function getSchema(ctx, module) {
     })
     .sort({ createdAt: -1 });
 
-    await this.populate(obj, ['users', 'owner']);
+
     return {
       ...obj.toObject(),
+      // owner,
+      users,
       message,
     };
   };
-  schema.statics.prepare = function (obj) {
-    if (Array.isArray(obj)) {
-      return Promise.map(obj, o => this.prepareOne(o));
-    }
-    return this.prepareOne(obj);
-  };
 
-  //
-  // schema.statics.prepare = function (obj) {
-  //   return this.populate(obj, [
-  //     'users', 'owner',
-  //   ]);
-  // };
   return schema;
 }
 

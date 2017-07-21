@@ -26,8 +26,13 @@ export function getSchema(ctx, module) {
       default: null,
     },
     attachments: {
-      type: [Object],
-      default: null,
+      type: [
+        //{
+          // url: String,
+        //}
+      ],
+      // type: [Object],
+      default: [],
     },
     read: {
       type: Boolean,

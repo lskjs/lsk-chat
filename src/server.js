@@ -128,7 +128,8 @@ export default (ctx) => {
       api.post('/private/:userId', isAuth, async (req) => {
         const myUserId = req.user._id;
         const { userId } = req.params;
-        const { content } = req.data;
+        const { content, attachments } = req.data;
+        console.log({attachments});
         if (!myUserId) throw '!myUserId';
         const userIds = [
           myUserId, userId,
@@ -153,6 +154,7 @@ export default (ctx) => {
           userId: myUserId,
           user: myUserId, // todo
           content,
+          attachments,
         };
 
         let message = await Message.create(data);
@@ -170,14 +172,14 @@ export default (ctx) => {
         return {
           __pack: 1,
           chat,
-          message,
+          data: message,
         };
       });
       api.post('/message', isAuth, async (req) => {
-        console.log(".post('/message'", req.data, req.user);
-        const params = req.allParams();
+        // console.log(".post('/message'", req.data, req.user);
+        const params = req.data;
         const userId = req.user._id;
-        params.user = userId;
+        params.userId = userId;
         const message = new Message(params);
         await message.save();
         // console.log(this.ws, 'this.ws');
