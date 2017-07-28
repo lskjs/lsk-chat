@@ -3,7 +3,7 @@ export function getSchema(ctx, module) {
   const mongoose = ctx.db;
   const schema = new UniversalSchema({
     subjectId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       index: true,
     },
     subjectType: {

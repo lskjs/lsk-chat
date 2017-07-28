@@ -1,11 +1,13 @@
 import _ from 'lodash';
 import { autobind } from 'core-decorators';
+import EventEmitter from 'events';
 
 export default (ctx) => {
   return class LskChat {
 
     async init() {
       this.models = require('./server/models').default(ctx, this);
+      this.events = new EventEmitter();
     }
     async run() {
       ctx.app.use('/api/module/chat', this.getApi());
@@ -129,7 +131,7 @@ export default (ctx) => {
         const myUserId = req.user._id;
         const { userId } = req.params;
         const { content, attachments } = req.data;
-        console.log({attachments});
+        // console.log({attachments});
         if (!myUserId) throw '!myUserId';
         const userIds = [
           myUserId, userId,
@@ -183,6 +185,7 @@ export default (ctx) => {
         const message = new Message(params);
         await message.save();
         // console.log(this.ws, 'this.ws');
+        this.events.emit('message.created', message);
         this.emit(
           this.getRoomName(params.subjectType, params.subjectId),
           await Message.populate(message, 'user'),
@@ -194,6 +197,7 @@ export default (ctx) => {
         const comment = await Message
         .findById(params.id)
         .then(ctx.helpers._checkNotFound('Comment'));
+        if (req.user._id !== comment.userId) throw e403('not owner')
         // check owner
         // validate params
         // Message.setState(params)
@@ -205,6 +209,7 @@ export default (ctx) => {
         const comment = await Message
         .findById(params.id)
         .then(ctx.helpers._checkNotFound('Comment'));
+        if (req.user._id !== comment.userId) throw e403('not owner')
         // check owner
         return comment.remove();
       }); // Изменить комментарий
@@ -232,6 +237,7 @@ export default (ctx) => {
     }
 
     emit(room, message, emitAction = 'message') {
+      this.events.emit('message', {room, message, emitAction});
       // console.log(`Шлю в комнату ${room} сообщение ${message.content}`);
       return this.ws.to(room).emit(emitAction, message);
     }
