@@ -244,15 +244,31 @@ export default (ctx) => {
 
     @autobind
     onSocket(socket) {
-      // console.log('socket connected');
+      __DEV__ && console.log('message.onSocket before');
       const { req } = socket;
       const { Message } = this.models;
+
+      if (req._errJwt) throw req._errJwt;
       if (!req.user || !req.user._id) throw new Error('Not Auth');
+      __DEV__ && console.log('message.onSocket', req.user._id);
+
+
+      // io.emit('this', { will: 'be received by everyone'});
+      //
+      // socket.on('private message', function (from, msg) {
+      //   console.log('I received a private message by ', from, ' saying ', msg);
+      // });
+
 
       const { subjectType, subjectId } = req.data;
       const roomName = this.getRoomName(subjectType, subjectId);
       socket.join(`user_${req.user.id}`);
       socket.join(roomName);
+      socket.on('disconnect', async (data) => {
+        __DEV__ && console.log('on disconnect');
+        socket.leave(`user_${req.user.id}`);
+        socket.leave(roomName);
+      })
       socket.on('message', async (data) => {
         // console.log('socket.on message', data);
         const message = new Message({

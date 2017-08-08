@@ -102,8 +102,26 @@ export function getSchema(ctx, module) {
         const chat = await Chat.findById(this.subjectId);
         chat.userIds && chat.userIds.forEach((userId) => {
           if ((this.userId && this.userId.toString()) === (userId.toString())) return;
+
+
+          let content = this.content;
+          if (this.attachments && this.attachments[0]) {
+            switch (this.attachments[0].type) {
+              case 'location':
+                content = 'Местоположение';
+                break;
+              case 'image':
+                content = 'Изображение';
+                break;
+            }
+          }
+          if (!content) content = 'Сообщение';
+          const message = 'Новое сообщение:' +  content;
+          // const message = user._id === message.userId ? `Вы: ${content}` : content;
+
+
           ctx.modules.notification.notify({
-            message: 'Новое сообщение: ' + this.content,
+            message,
             subjectId: this.userId,
             subjectType: 'User',
             objectId: this.subjectId,
@@ -111,7 +129,7 @@ export function getSchema(ctx, module) {
             action: 'message',
             info: {
               messageId: this._id,
-              messageText: this.content,
+              messageText: message,
             },
             userId,
           });
