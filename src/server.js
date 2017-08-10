@@ -78,7 +78,7 @@ export default (ctx) => {
         // console.log('after-after1231231', chat.usersViewedAt[myUserId]);
         await chat.save();
         // console.log('after-after', chat.usersViewedAt[myUserId]);
-        return chat
+        return chat;
         // .populate('user'); // order populate sort
       });
       api.all('/myList', isAuth, async (req) => {
@@ -197,7 +197,7 @@ export default (ctx) => {
         const comment = await Message
         .findById(params.id)
         .then(ctx.helpers._checkNotFound('Comment'));
-        if (req.user._id !== comment.userId) throw e403('not owner')
+        if (req.user._id !== comment.userId) throw e403('not owner');
         // check owner
         // validate params
         // Message.setState(params)
@@ -209,7 +209,7 @@ export default (ctx) => {
         const comment = await Message
         .findById(params.id)
         .then(ctx.helpers._checkNotFound('Comment'));
-        if (req.user._id !== comment.userId) throw e403('not owner')
+        if (req.user._id !== comment.userId) throw e403('not owner');
         // check owner
         return comment.remove();
       }); // Изменить комментарий
@@ -237,7 +237,7 @@ export default (ctx) => {
     }
 
     emit(room, message, emitAction = 'message') {
-      this.events.emit('message', {room, message, emitAction});
+      this.events.emit('message', { room, message, emitAction });
       // console.log(`Шлю в комнату ${room} сообщение ${message.content}`);
       return this.ws.to(room).emit(emitAction, message);
     }
@@ -252,25 +252,44 @@ export default (ctx) => {
       if (!req.user || !req.user._id) throw new Error('Not Auth');
       __DEV__ && console.log('message.onSocket', req.user._id);
 
-
       // io.emit('this', { will: 'be received by everyone'});
       //
       // socket.on('private message', function (from, msg) {
       //   console.log('I received a private message by ', from, ' saying ', msg);
       // });
-
+      //
 
       const { subjectType, subjectId } = req.data;
+      // console.log('@@@@ req.data', req.data, { subjectType, subjectId });
       const roomName = this.getRoomName(subjectType, subjectId);
-      socket.join(`user_${req.user.id}`);
+      // console.log('roomName', roomName);
+      // socket.join(`user_${req.user.id}`);
       socket.join(roomName);
+
+      // setInterval(() => {
+      //   const message = {
+      //     // content: 'Пинг от сервера',
+      //     content: {
+      //       __md: 'Пинг от *сервера* PING'
+      //     },
+      //     createdAt: new Date(),
+      //     updatedAt: new Date(),
+      //     subjectId,
+      //     subjectType,
+      //     userId: null,
+      //   }
+      //   // socket.emit('pinggggg@', { will: 'be received by everyone' });
+      //   this.emit(roomName, message);
+      // }, 10000);
+
       socket.on('disconnect', async (data) => {
         __DEV__ && console.log('on disconnect');
-        socket.leave(`user_${req.user.id}`);
+        // socket.leave(`user_${req.user.id}`);
         socket.leave(roomName);
-      })
+      });
       socket.on('message', async (data) => {
         // console.log('socket.on message', data);
+        if (!data || typeof data !== 'object') return;
         const message = new Message({
           ...data,
           subjectType,
