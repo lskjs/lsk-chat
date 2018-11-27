@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import Textarea from 'react-textarea-autosize';
 import AddIcon from 'react-icons2/md/add-circle-outline';
-import Avatar from 'lsk-general/General/Avatar';
+import Avatar from '@lskjs/general/Avatar';
 import cn from 'classnames';
 import importcss from 'importcss';
 import styles from './ReplyForm.css';

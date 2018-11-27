@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, {Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import importcss from 'importcss';
 import styles from './Comment.css';
 
-import Avatar from 'lsk-general/General/Avatar';
+import Avatar from '@lskjs/general/Avatar';
 import Meta from './CommentMeta';
 import Content from './CommentContent'
 import Actions from './CommentActions';

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import InnerHtml from 'lsk-general/General/InnerHtml';
+import InnerHtml from '@lskjs/general/InnerHtml';
 import cn from 'classnames';
 import importcss from 'importcss';
 import styles from './Comment.css';

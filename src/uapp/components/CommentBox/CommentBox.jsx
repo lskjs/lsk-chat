@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { autobind } from 'core-decorators';
+import autobind from 'core-decorators/lib/autobind';
 import Comment from '../Comment';
 import ReplyForm from '../ReplyForm';
 import FavoriteIcon from 'react-icons2/md/favorite-outline';

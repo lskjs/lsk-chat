@@ -1,7 +1,7 @@
-import _ from 'lodash';
-import { autobind } from 'core-decorators';
+import sortBy from 'lodash/sortBy';
+import autobind from 'core-decorators/lib/autobind';
 import EventEmitter from 'events';
-
+const DEBUG = false;// || __DEV__;
 export default (ctx) => {
   return class LskChat {
 
@@ -90,7 +90,7 @@ export default (ctx) => {
         // console.log({chats});
         chats = await Chat.prepare(chats);
         chats = chats.filter(c => c.message != null);
-        chats = _.sortBy(chats, 'message.createdAt').reverse();
+        chats = sortBy(chats, 'message.createdAt').reverse();
         // console.log({ qwedasda: chats[0] });
         return chats;
         // .populate('user'); // order populate sort
@@ -136,6 +136,22 @@ export default (ctx) => {
         const userIds = [
           myUserId, userId,
         ];
+
+        // говно код на блокировк
+        const { rating } = ctx.modules;
+        if (rating) {
+          const { Rating } = rating.models;
+          const isBlocked = await Rating.findOne({
+            subjectId: myUserId,
+            subjectType: 'user',
+            // type: '',
+            type: 'block',
+            value: true,
+            userId,
+          })
+          if (isBlocked) throw 'Сообщение не может быть доставлено, пользователь заблокировал вас';
+          if (isBlocked) throw 'User blocked you';
+        }
 
         let chat = await Chat.findOne({
           type: 'private',
@@ -266,26 +282,37 @@ export default (ctx) => {
       // socket.join(`user_${req.user.id}`);
       socket.join(roomName);
 
-      // setInterval(() => {
-      //   const message = {
-      //     // content: 'Пинг от сервера',
-      //     content: {
-      //       __md: 'Пинг от *сервера* PING'
-      //     },
-      //     createdAt: new Date(),
-      //     updatedAt: new Date(),
-      //     subjectId,
-      //     subjectType,
-      //     userId: null,
-      //   }
-      //   // socket.emit('pinggggg@', { will: 'be received by everyone' });
-      //   this.emit(roomName, message);
-      // }, 10000);
+      let timer;
+      if (DEBUG) {
+        let prefix = Math.floor(Math.random() * 10000) * 10000;
+        let i = 0;
+        timer = setInterval(() => {
+          const _id = prefix + (++i);
+          const message = {
+            content: 'Пинг от сервера: ' + _id,
+            // content: {
+            //   __md: 'Пинг от *сервера* PING'
+            // },
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            subjectId,
+            subjectType,
+            userId: null,
+            _id,
+          }
+          // console.log('emit', roomName, message);
+          // socket.emit('emit@', { will: 'be received by everyone' });
+          this.emit(roomName, message);
+        }, 10000);
+      }
 
       socket.on('disconnect', async (data) => {
         __DEV__ && console.log('on disconnect');
         // socket.leave(`user_${req.user.id}`);
         socket.leave(roomName);
+        if (DEBUG && timer) {
+          clearInterval(timer);
+        }
       });
       socket.on('message', async (data) => {
         // console.log('socket.on message', data);

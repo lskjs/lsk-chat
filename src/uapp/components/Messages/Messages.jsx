@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { inject } from 'mobx-react';
-import _ from 'lodash';
+import get from 'lodash/get';
 import {
   Card,
   CardBlock,
@@ -8,8 +8,8 @@ import {
 import {
   FormControl,
 } from 'react-bootstrap';
-import Avatar from 'lsk-general/General/Avatar';
-import Loading from 'lsk-general/General/Loading';
+import Avatar from '@lskjs/general/Avatar';
+import Loading from '@lskjs/general/Loading';
 import CommentBox from '../CommentBox';
 
 @inject('user', 'api')
@@ -79,7 +79,7 @@ export default class Chat extends Component {
               date: message.createdAt,
               user: {
                 ...message.user,
-                avatar: _.get(message, 'user.profile.avatar'),
+                avatar: get(message, 'user.profile.avatar'),
               }
             }))}
             user={this.props.user}
@@ -90,7 +90,7 @@ export default class Chat extends Component {
               <CardBlock>
                 <Avatar
                   size={20}
-                  src={_.get(message, 'user.profile.avatar')}
+                  src={get(message, 'user.profile.avatar')}
                   style={{
                     margin: '10px',
                   }}
