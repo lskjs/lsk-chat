@@ -50,7 +50,7 @@ export default class CommentBox extends Component {
 
     const htmlId = `comment_${comment._id}`;
 
-    const getChildren = this.props.getChildren ? this.props.getChildren : this.getChildrenComments;
+    const getChildren = this.props.getChildren ? this.props.getChildren : this.getChildrenComments.bind(this);
 
     return (
       <div key={comment._id} style={{ marginLeft }} id={htmlId}>
